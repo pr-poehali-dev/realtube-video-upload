@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Icon from '@/components/ui/icon';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,6 +8,7 @@ import { Card } from '@/components/ui/card';
 import ChannelPage from '@/components/ChannelPage';
 import VideoPlayer from '@/components/VideoPlayer';
 import ShortsPlayer from '@/components/ShortsPlayer';
+import { getSubscribedChannels, type Channel } from '@/lib/subscriptions';
 
 const Index = () => {
   const [activeSection, setActiveSection] = useState('home');
@@ -210,18 +211,24 @@ const Index = () => {
               Подписки
             </h3>
             <div className="space-y-1">
-              {['Tech Channel', 'Cooking Show', 'Music Vibes'].map((channel, idx) => (
-                <button
-                  key={idx}
-                  className="w-full flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-secondary/50 transition-colors"
-                >
-                  <Avatar className="h-7 w-7">
-                    <AvatarImage src={`https://api.dicebear.com/7.x/initials/svg?seed=${channel}`} />
-                    <AvatarFallback>{channel[0]}</AvatarFallback>
-                  </Avatar>
-                  <span className="text-sm truncate">{channel}</span>
-                </button>
-              ))}
+              {subscribedChannels.length === 0 ? (
+                <p className="px-4 py-2 text-xs text-muted-foreground">
+                  Подписок пока нет
+                </p>
+              ) : (
+                subscribedChannels.map((channel) => (
+                  <button
+                    key={channel.id}
+                    className="w-full flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-secondary/50 transition-colors"
+                  >
+                    <Avatar className="h-7 w-7">
+                      <AvatarImage src={channel.avatar} />
+                      <AvatarFallback>{channel.name[0]}</AvatarFallback>
+                    </Avatar>
+                    <span className="text-sm truncate">{channel.name}</span>
+                  </button>
+                ))
+              )}
             </div>
           </div>
         </aside>
@@ -310,7 +317,43 @@ const Index = () => {
             </div>
           )}
 
-          {['subscriptions', 'library', 'history', 'trending'].includes(activeSection) && (
+          {activeSection === 'subscriptions' && (
+            <div className="animate-fade-in">
+              <h2 className="text-2xl font-bold mb-6">Мои подписки</h2>
+              {subscribedChannels.length === 0 ? (
+                <div className="text-center py-20">
+                  <Icon name="Users" size={64} className="mx-auto mb-4 text-muted-foreground" />
+                  <h3 className="text-lg font-semibold mb-2">Нет подписок</h3>
+                  <p className="text-muted-foreground mb-4">
+                    Подпишитесь на каналы, чтобы не пропустить новые видео
+                  </p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                  {subscribedChannels.map((channel) => (
+                    <Card key={channel.id} className="bg-card border-border p-4 hover-lift">
+                      <div className="flex flex-col items-center text-center">
+                        <Avatar className="h-24 w-24 mb-4">
+                          <AvatarImage src={channel.avatar} />
+                          <AvatarFallback>{channel.name[0]}</AvatarFallback>
+                        </Avatar>
+                        <h3 className="font-semibold text-lg mb-1">{channel.name}</h3>
+                        <p className="text-sm text-muted-foreground mb-1">{channel.handle}</p>
+                        <p className="text-xs text-muted-foreground mb-4">
+                          {channel.subscribers} подписчиков
+                        </p>
+                        <Button className="w-full bg-secondary text-foreground">
+                          Вы подписаны
+                        </Button>
+                      </div>
+                    </Card>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {['library', 'history', 'trending'].includes(activeSection) && (
             <div className="animate-fade-in text-center py-20">
               <Icon name="Construction" size={64} className="mx-auto mb-4 text-muted-foreground" />
               <h2 className="text-2xl font-bold mb-2">Раздел в разработке</h2>

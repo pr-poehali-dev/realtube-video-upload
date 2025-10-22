@@ -2,6 +2,7 @@ import { useRef, useState, useEffect } from 'react';
 import Icon from '@/components/ui/icon';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { isSubscribed, subscribe, unsubscribe } from '@/lib/subscriptions';
 
 interface Short {
   id: number;
@@ -23,10 +24,32 @@ const ShortsPlayer = ({ shorts, initialIndex, onClose }: ShortsPlayerProps) => {
   const [isPlaying, setIsPlaying] = useState(true);
   const [isMuted, setIsMuted] = useState(false);
   const [showLike, setShowLike] = useState(false);
+  const [subscribed, setSubscribed] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const currentShort = shorts[currentIndex];
+  const channelId = `channel_${currentShort.channel?.replace(/\s+/g, '_').toLowerCase() || 'user'}`;
+
+  useEffect(() => {
+    setSubscribed(isSubscribed(channelId));
+  }, [channelId, currentIndex]);
+
+  const handleSubscribe = () => {
+    if (subscribed) {
+      unsubscribe(channelId);
+      setSubscribed(false);
+    } else {
+      subscribe({
+        id: channelId,
+        name: currentShort.channel || 'Пользователь',
+        handle: `@${currentShort.channel?.replace(/\s+/g, '').toLowerCase() || 'user'}`,
+        avatar: `https://api.dicebear.com/7.x/initials/svg?seed=${currentShort.channel || 'User'}`,
+        subscribers: currentShort.views,
+      });
+      setSubscribed(true);
+    }
+  };
 
   useEffect(() => {
     if (videoRef.current && isPlaying) {
@@ -179,8 +202,12 @@ const ShortsPlayer = ({ shorts, initialIndex, onClose }: ShortsPlayerProps) => {
                 <p className="font-semibold">{currentShort.channel || 'Пользователь'}</p>
                 <p className="text-xs opacity-80">{currentShort.views} просмотров</p>
               </div>
-              <Button size="sm" className="gradient-red text-white ml-auto">
-                Подписаться
+              <Button
+                size="sm"
+                className={subscribed ? 'bg-secondary text-foreground ml-auto' : 'gradient-red text-white ml-auto'}
+                onClick={handleSubscribe}
+              >
+                {subscribed ? 'Подписаны' : 'Подписаться'}
               </Button>
             </div>
 

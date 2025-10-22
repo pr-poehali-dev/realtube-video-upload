@@ -1,9 +1,10 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import Icon from '@/components/ui/icon';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
+import { isSubscribed, subscribe, unsubscribe } from '@/lib/subscriptions';
 
 interface Video {
   id: number;
@@ -28,7 +29,29 @@ const VideoPlayer = ({ video, onClose, relatedVideos }: VideoPlayerProps) => {
   const [volume, setVolume] = useState(100);
   const [isMuted, setIsMuted] = useState(false);
   const [showLike, setShowLike] = useState(false);
-  const [isSubscribed, setIsSubscribed] = useState(false);
+  const [subscribed, setSubscribed] = useState(false);
+
+  const channelId = `channel_${video.channel.replace(/\s+/g, '_').toLowerCase()}`;
+
+  useEffect(() => {
+    setSubscribed(isSubscribed(channelId));
+  }, [channelId]);
+
+  const handleSubscribe = () => {
+    if (subscribed) {
+      unsubscribe(channelId);
+      setSubscribed(false);
+    } else {
+      subscribe({
+        id: channelId,
+        name: video.channel,
+        handle: `@${video.channel.replace(/\s+/g, '').toLowerCase()}`,
+        avatar: `https://api.dicebear.com/7.x/initials/svg?seed=${video.channel}`,
+        subscribers: '1.2M',
+      });
+      setSubscribed(true);
+    }
+  };
 
   const togglePlay = () => {
     if (videoRef.current) {
@@ -161,10 +184,10 @@ const VideoPlayer = ({ video, onClose, relatedVideos }: VideoPlayerProps) => {
                     <p className="text-xs text-muted-foreground">1.2M подписчиков</p>
                   </div>
                   <Button
-                    className={isSubscribed ? 'bg-secondary text-foreground' : 'gradient-red text-white'}
-                    onClick={() => setIsSubscribed(!isSubscribed)}
+                    className={subscribed ? 'bg-secondary text-foreground' : 'gradient-red text-white'}
+                    onClick={handleSubscribe}
                   >
-                    {isSubscribed ? 'Вы подписаны' : 'Подписаться'}
+                    {subscribed ? 'Вы подписаны' : 'Подписаться'}
                   </Button>
                 </div>
 
