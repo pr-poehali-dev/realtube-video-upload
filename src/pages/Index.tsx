@@ -115,7 +115,7 @@ const Index = () => {
               <div className="w-9 h-9 rounded-lg gradient-red flex items-center justify-center">
                 <Icon name="Play" size={20} className="text-white" />
               </div>
-              <h1 className="text-xl font-bold tracking-tight">RealTUBE</h1>
+              <h1 className="text-xl font-bold tracking-tight">RealGazGikTube</h1>
             </div>
           </div>
 
