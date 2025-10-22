@@ -5,10 +5,16 @@ import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Card } from '@/components/ui/card';
+import ChannelPage from '@/components/ChannelPage';
 
 const Index = () => {
   const [activeSection, setActiveSection] = useState('home');
   const [searchQuery, setSearchQuery] = useState('');
+  const [showChannel, setShowChannel] = useState(false);
+
+  if (showChannel) {
+    return <ChannelPage onBack={() => setShowChannel(false)} />;
+  }
 
   const mockVideos = [
     {
@@ -168,7 +174,7 @@ const Index = () => {
               <Icon name="Bell" size={22} />
             </Button>
 
-            <Avatar className="h-8 w-8 cursor-pointer">
+            <Avatar className="h-8 w-8 cursor-pointer" onClick={() => setShowChannel(true)}>
               <AvatarImage src="https://api.dicebear.com/7.x/avataaars/svg?seed=user" />
               <AvatarFallback>U</AvatarFallback>
             </Avatar>
