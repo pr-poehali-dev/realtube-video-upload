@@ -6,6 +6,8 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Card } from '@/components/ui/card';
 import ChannelPage from '@/components/ChannelPage';
+import VideoPlayer from '@/components/VideoPlayer';
+import ShortsPlayer from '@/components/ShortsPlayer';
 
 const Index = () => {
   const [activeSection, setActiveSection] = useState('home');
@@ -233,6 +235,7 @@ const Index = () => {
                   <Card
                     key={video.id}
                     className="bg-card border-border overflow-hidden hover-lift cursor-pointer group"
+                    onClick={() => setSelectedVideo(video)}
                   >
                     <div className="relative aspect-video overflow-hidden">
                       <img
@@ -282,6 +285,7 @@ const Index = () => {
                   <Card
                     key={short.id}
                     className="bg-card border-border overflow-hidden hover-lift cursor-pointer group"
+                    onClick={() => setSelectedShort(mockShorts.indexOf(short))}
                   >
                     <div className="relative aspect-[9/16] overflow-hidden">
                       <img

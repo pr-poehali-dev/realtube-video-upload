@@ -139,22 +139,71 @@ const ChannelPage = ({ onBack }: ChannelPageProps) => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="avatar">URL аватара</Label>
+                  <Label htmlFor="avatar">Аватар</Label>
+                  <div className="flex gap-2">
+                    <Input
+                      id="avatar"
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          const reader = new FileReader();
+                          reader.onloadend = () => {
+                            setEditForm({ ...editForm, avatar: reader.result as string });
+                          };
+                          reader.readAsDataURL(file);
+                        }
+                      }}
+                      className="flex-1"
+                    />
+                    {editForm.avatar && (
+                      <Avatar className="h-10 w-10">
+                        <AvatarImage src={editForm.avatar} />
+                        <AvatarFallback>Пр</AvatarFallback>
+                      </Avatar>
+                    )}
+                  </div>
                   <Input
-                    id="avatar"
+                    type="text"
                     value={editForm.avatar}
                     onChange={(e) => setEditForm({ ...editForm, avatar: e.target.value })}
-                    placeholder="https://..."
+                    placeholder="Или вставьте URL https://..."
+                    className="text-xs"
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="banner">URL баннера</Label>
+                  <Label htmlFor="banner">Баннер</Label>
+                  <div className="flex gap-2">
+                    <Input
+                      id="banner"
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          const reader = new FileReader();
+                          reader.onloadend = () => {
+                            setEditForm({ ...editForm, banner: reader.result as string });
+                          };
+                          reader.readAsDataURL(file);
+                        }
+                      }}
+                      className="flex-1"
+                    />
+                  </div>
+                  {editForm.banner && (
+                    <div className="h-24 rounded-lg overflow-hidden">
+                      <img src={editForm.banner} alt="Preview" className="w-full h-full object-cover" />
+                    </div>
+                  )}
                   <Input
-                    id="banner"
+                    type="text"
                     value={editForm.banner}
                     onChange={(e) => setEditForm({ ...editForm, banner: e.target.value })}
-                    placeholder="https://..."
+                    placeholder="Или вставьте URL https://..."
+                    className="text-xs"
                   />
                 </div>
 
